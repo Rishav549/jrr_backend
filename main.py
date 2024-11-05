@@ -2,8 +2,12 @@ from fastapi import FastAPI
 from routes.product import router as product_router
 from routes.contact import router as contact_router
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
+
+UPLOAD_DIRECTORY = "./uploaded_images"
+app.mount("/uploaded_images", StaticFiles(directory=UPLOAD_DIRECTORY), name="uploaded_images")
 
 app.add_middleware(
     CORSMiddleware, allow_origins=["*"],

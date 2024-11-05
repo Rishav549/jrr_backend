@@ -1,21 +1,46 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from fastapi.responses import JSONResponse
 from db.db import get_db, DB
 from schemas.product import ProductBase, ProductCreate, ProductView
 from bson import ObjectId
 from datetime import datetime
 from models.product import Product
+import os
+import uuid
 
 router = APIRouter()
+UPLOAD_DIRECTORY = "./uploaded_images"
+os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 
 @router.post("/product/create")
-async def create_product(product: ProductCreate, db: DB= Depends(get_db)):
-    existing_product = db.find_one("product_master", {"product_code": product.product_name})
+async def create_product(product_name: str = Form(...),
+    desc: str = Form(...),
+    images: list[UploadFile] = File(...), 
+    db: DB= Depends(get_db)):
+    existing_product = db.find_one("product_master", {"product_code": product_name})
     if existing_product is not None:
         return JSONResponse({"detail": "product already exists"}, status_code=400)
 
-    product = db.insert("product_master", product.model_dump(mode="json"))
-    return JSONResponse({"detail": "ok", "product": product}, status_code=201)
+    image_paths = []
+    for image in images:
+        unique_filename = f"{uuid.uuid4()}.png"
+        image_path = os.path.join(UPLOAD_DIRECTORY, unique_filename)
+        with open(image_path, "wb") as buffer:
+            buffer.write(await image.read())
+        image_paths.append(image_path)
+
+    # Create product data to insert
+    product_data = {
+        "product_name": product_name,
+        "desc": desc,
+        "image": image_paths
+    }
+
+    # Insert into MongoDB
+    inserted_product = db.insert("product_master", product_data)
+
+    #product = db.insert("product_master", product.model_dump(mode="json"))
+    return JSONResponse({"detail": "ok", "product": inserted_product}, status_code=201)
 
 
 @router.get("/product/")
