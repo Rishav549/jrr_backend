@@ -51,3 +51,16 @@ async def get_product(db: DB = Depends(get_db)):
         return JSONResponse({"detail": "Products not found"}, status_code=404)
     
     return {"detail": "ok", "products": [product.to_dict() for product in products]}
+
+
+@router.get("/product/{product_id}")
+async def get_product_by_id(product_id: str, db: DB = Depends(get_db)):
+    if not ObjectId.is_valid(product_id):
+        raise HTTPException(status_code=400, detail="Invalid product ID format")
+    
+    product_document = db.find_one("product_master", {"_id": ObjectId(product_id)})
+    if not product_document:
+        return JSONResponse({"detail": "Product Not Found"}, status_code=404)
+
+    product = Product.from_document(product_document)
+    return {"detail": "ok", "product": product.to_dict()}
