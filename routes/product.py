@@ -9,7 +9,7 @@ import os
 import uuid
 
 router = APIRouter()
-UPLOAD_DIRECTORY = "./uploaded_images"
+UPLOAD_DIRECTORY = "./uploaded_images/products"
 os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 
 @router.post("/product/create")
