@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from routes.product import router as product_router
 from routes.contact import router as contact_router
+from routes.blogs import router as blogs_router
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
@@ -19,6 +20,7 @@ def health():
 
 app.include_router(product_router)
 app.include_router(contact_router)
+app.include_router(blogs_router)
 
 if __name__ == "__main__":
     import uvicorn
