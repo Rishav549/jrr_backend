@@ -1,0 +1,10 @@
+.venv/
+.env/
+__pycache__/
+*/__pycache__/
+*.pyc
+
+# Alembic migrations
+alembic/
+alembic.ini/
+.uploaded_images
