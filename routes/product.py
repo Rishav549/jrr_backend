@@ -7,6 +7,7 @@ from datetime import datetime
 from models.product import Product
 import os
 import uuid
+from utilities.auth import get_current_user
 
 router = APIRouter()
 UPLOAD_DIRECTORY = "./uploaded_images/products"
@@ -16,7 +17,7 @@ os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 async def create_product(product_name: str = Form(...),
     desc: str = Form(...),
     images: list[UploadFile] = File(...), 
-    db: DB= Depends(get_db)):
+    db: DB= Depends(get_db), user: dict = Depends(get_current_user)):
     existing_product = db.find_one("product_master", {"product_code": product_name})
     if existing_product is not None:
         return JSONResponse({"detail": "product already exists"}, status_code=400)

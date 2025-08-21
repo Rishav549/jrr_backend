@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, HTTPException, Form
+from utilities.auth import authenticate_user, create_access_token
 from routes.product import router as product_router
 from routes.contact import router as contact_router
 from routes.blogs import router as blogs_router
@@ -13,6 +14,15 @@ app.mount("/uploaded_images", StaticFiles(directory=UPLOAD_DIRECTORY), name="upl
 app.add_middleware(
     CORSMiddleware, allow_origins=["*"],
     allow_credentials=True, allow_methods=['*'], allow_headers=['*'])
+
+@app.post("/token")
+def login(username: str=Form(...), password: str=Form(...)):
+    if not authenticate_user(username, password):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    token = create_access_token(
+        data={"sub": username},
+    )
+    return {"access_token": token}
 
 @app.get("/health")
 def health():

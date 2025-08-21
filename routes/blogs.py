@@ -5,6 +5,7 @@ from models.blogs import Blogs
 from bson import ObjectId
 import os
 import uuid
+from utilities.auth import get_current_user
 
 router = APIRouter()
 
@@ -15,7 +16,7 @@ os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
 async def create_blogs(blog_title: str = Form(...),
     desc: str = Form(...),
     image: UploadFile = File(...), 
-    db: DB= Depends(get_db)):
+    db: DB= Depends(get_db), user: dict = Depends(get_current_user)):
 
     unique_filename = f"{uuid.uuid4()}.png"
     image_path = os.path.join(UPLOAD_DIRECTORY, unique_filename)

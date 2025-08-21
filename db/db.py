@@ -36,7 +36,6 @@ class DB:
 
 connection_string = os.environ.get("MONGODB_CONNECTION_STRING")
 
-print(connection_string)
 db = DB(
     db_name="jrrinternational",
     connection_string=connection_string
