@@ -9,13 +9,13 @@ bearer_scheme = HTTPBearer(auto_error=False)
 
 load_dotenv()
 
-MASTERADMIN_USERNAME = os.getenv("MASTERADMIN_USERNAME")
-MASTERADMIN_PASSWORD = os.getenv("MASTERADMIN_PASSWORD")
-
 def authenticate_user(username: str, password: str):
+    MASTERADMIN_USERNAME = os.getenv("MASTERADMIN_USERNAME")
+    MASTERADMIN_PASSWORD = os.getenv("MASTERADMIN_PASSWORD")
     return username == MASTERADMIN_USERNAME and password == MASTERADMIN_PASSWORD
 
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme)):
+    MASTERADMIN_USERNAME = os.getenv("MASTERADMIN_USERNAME")
     if credentials is None:
          raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
