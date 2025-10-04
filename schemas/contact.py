@@ -5,7 +5,7 @@ class ContactBase(BaseModel):
     full_name: str
     email_id: str
     contact_number: str
-    hsn_code: str
+    hsn_code: str | None
     message: str
 
 class ContactCreate(ContactBase):
